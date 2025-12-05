@@ -1,0 +1,59 @@
+{
+  "name": "nestjs-swagger-document",
+  "version": "1.0.0",
+  "private": false,
+  "scripts": {
+    "build": "tsc",
+    "prepare": "rimraf dist && pnpm run build",
+    "prepublishOnly": "pnpm run build",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "version:alpha": "npm version prerelease --preid=alpha --no-git-tag-version"
+  },
+  "dependencies": {
+    "@nestjs/cli": "^11.0.13",
+    "@nestjs/common": "^11.1.9",
+    "@nestjs/core": "^11.1.9",
+    "@nestjs/swagger": "^11.2.3",
+    "@swc/core": "^1.15.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@eslint/js": "^9.15.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.0",
+    "eslint-plugin-promise": "^7.1.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "prettier": "^3.3.0",
+    "rimraf": "^6.0.1",
+    "typescript": "5.8.3"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^11.0.0",
+    "@nestjs/core": "^11.0.0",
+    "@nestjs/swagger": "^11.0.0"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roadhong/nestjs-swagger-document.git"
+  },
+  "keywords": [
+    "nestjs",
+    "swagger",
+    "document",
+    "module",
+    "typescript"
+  ],
+  "license": "MIT"
+}
