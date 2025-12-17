@@ -1,6 +1,6 @@
 {
   "name": "nestjs-swagger-document",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "scripts": {
     "build": "tsc",

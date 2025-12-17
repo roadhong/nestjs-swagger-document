@@ -2,7 +2,7 @@ import { parentPort, workerData } from 'worker_threads';
 import { PluginMetadataGenerator } from '@nestjs/cli/lib/compiler/plugins/plugin-metadata-generator';
 import { ReadonlyVisitor } from '@nestjs/swagger/dist/plugin';
 import path from 'path';
-import { existsSync, unlinkSync, writeFileSync, readFileSync } from 'fs';
+import { existsSync, unlinkSync, readFileSync, writeFileSync } from 'fs';
 import { SwaggerDocumentModuleOptions } from '../swagger.document.define';
 
 interface WorkerData {
@@ -85,21 +85,10 @@ if (parentPort) {
       }
 
       if (existsSync(metadataTsPath)) {
-        const tsContent = readFileSync(metadataTsPath, 'utf-8');
-        const relativePathRegex = /(['"])(\.\.?\.\/?[^'"]+)(['"])/g;
-        const metadataDir = path.dirname(metadataTsPath);
-
-        const transformedContent = tsContent.replace(relativePathRegex, (match, quote1, relativePath, quote2) => {
-          const resolvedRelativePath = path.resolve(metadataDir, relativePath);
-          const resolvedOutPath = resolvedRelativePath.replace(baseRootDir, baseOutDir);
-          const newRelativePath = path.relative(metadataDir, resolvedOutPath);
-
-          return `${quote1}${newRelativePath}${quote2}`;
-        });
-
         try {
           const swc = await import('@swc/core');
-          const result = await swc.transform(transformedContent, {
+          const tsContent = readFileSync(metadataTsPath, 'utf-8');
+          const result = await swc.transform(tsContent, {
             module: { type: 'commonjs' },
             jsc: {
               parser: {
@@ -108,7 +97,14 @@ if (parentPort) {
               },
             },
           });
-          writeFileSync(metadataJsPath, result.code, 'utf-8');
+          const rootDirRelative = path.relative(metadataFolder, baseRootDir);
+          const outDirRelative = path.relative(metadataFolder, baseOutDir);
+          const escapedRootDir = rootDirRelative.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const rootDirRegex = new RegExp(`(["'])(([^"']*\\/)?)${escapedRootDir}((\\/[^"']*)?)\\1`, 'g');
+          const transformedCode = result.code.replace(rootDirRegex, (match, quote, prefixGroup, prefix, suffixGroup, suffix) => {
+            return `${quote}${prefix || ''}${outDirRelative}${suffix || ''}${quote}`;
+          });
+          writeFileSync(metadataJsPath, transformedCode, 'utf-8');
 
           if (options.debug) {
             sendLog('debug', `[Worker] Metadata JS path: ${metadataJsPath}`);
