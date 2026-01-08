@@ -100,8 +100,7 @@ export class SwaggerDocumentService {
     }
   }
 
-  loadMetadata(file: string): OpenAPIObject {
-    const filePath = path.join(__dirname, file);
+  loadMetadata(filePath: string): OpenAPIObject {
     if (this.options.debug) {
       this.logger.debug(`Loading metadata from: ${filePath}`);
     }
