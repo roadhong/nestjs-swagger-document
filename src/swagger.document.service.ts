@@ -39,7 +39,7 @@ export class SwaggerDocumentService {
     return this.document;
   }
 
-  initialize(baseApp: INestApplication): void {
+  initialize(baseApp: INestApplication, callback?: () => void | Promise<void>): void {
     if (this.options.debug) {
       this.logger.debug('Initializing SwaggerDocumentService...');
     }
@@ -49,6 +49,14 @@ export class SwaggerDocumentService {
       try {
         await this.setup(baseApp, metadata);
         this.logger.log('Swagger document setup completed');
+
+        if (callback) {
+          try {
+            await callback();
+          } catch (error) {
+            this.logger.error('initialize callback error:', error);
+          }
+        }
       } catch (error) {
         this.logger.error('SwaggerService.setup error:', error);
       }

@@ -84,6 +84,11 @@ As shown above, simply writing comments on DTO class properties will automatical
 - Maintains consistent API response formats by setting common response wrapper classes
 - Can exclude common responses for specific controllers or methods
 
+## Requirements
+
+- **NestJS**: ^11.0.0
+- **TypeScript**: ^5.0.0
+
 ## Installation
 
 ```bash
@@ -93,6 +98,8 @@ pnpm add nestjs-swagger-document
 # or
 yarn add nestjs-swagger-document
 ```
+
+**Note**: This package requires NestJS 11 and TypeScript 5 or higher. Make sure your project meets these requirements before installation.
 
 ## Usage
 
@@ -137,7 +144,10 @@ async function bootstrap() {
   // Note: Metadata generation runs asynchronously in a worker,
   // so the document may not be created immediately after initialization.
   const swaggerService = app.get(SwaggerDocumentService);
-  swaggerService.initialize(app);
+  swaggerService.initialize(app, async () => {
+    // Optional: Callback after initialization completes
+    console.log('Swagger document initialization completed');
+  });
 
   await app.listen(3000);
 }
